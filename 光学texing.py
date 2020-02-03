@@ -73,7 +73,7 @@ def CharacteristicMatrix(cos_ar_k,YK,xwhd,k):    #矩阵[BC]
             a0=np.identity(2)               #创建单位矩阵
             bc_1.append(a0)
         else:
-            m11=cos_ar_k[gdsh];m22=cos_ar_k[gdsh]          #m11,m12,m21,m22特征矩阵的各元素
+            m11=np.cos(xwhd[gdsh]);m22=np.cos(xwhd[gdsh])          #m11,m12,m21,m22特征矩阵的各元素
             m12=1j*np.sin(xwhd[gdsh])/YK[gdsh]
             m21=1j*np.sin(xwhd[gdsh])*YK[gdsh]
             a1=np.array([[m11,m12],[m21,m22]])                 #创建特征矩阵
@@ -81,9 +81,7 @@ def CharacteristicMatrix(cos_ar_k,YK,xwhd,k):    #矩阵[BC]
             bc_1.append(a2)
         gdsh=gdsh+1
     bc_11=bc_1[-1]
-    bc1=bc_11[0][0]+bc_11[0][1]*bc_2[1]
-    bc2=bc_11[1][0]+bc_11[1][1]*bc_2[1]
-    bc=[bc1,bc2]                                                             #得到BC矩阵
+    bc=np.dot(bc_11,bc_2)                                                            #得到BC矩阵
     return bc
 # 衬底和膜系组合的能量反射率
 def reflex(BCp,BCs,PYK_0,SYK_0):                     # 衬底和膜系组合的能量反射率
@@ -96,12 +94,12 @@ def reflex(BCp,BCs,PYK_0,SYK_0):                     # 衬底和膜系组合的�
     R=(pRj+sRj)/2
     return R.real
 
-n=[1,1.38,2.55,1.52]
-d=[0,135,130,0]
-o=0
-k=2
+# n=[1,1.38,2.55,1.52]
+# d=[0,135,130,0]
+# o=0
+# k=2
 
-# n,d,o,k=inputParameter()            # 输入层数k、折射率n、厚度d、入射角度o
+n,d,o,k=inputParameter()            # 输入层数k、折射率n、厚度d、入射角度o
 Wavelength=wavelengthInput()     #要计算波长范围输入
 reflectivity=[]           #能量反射率列表，空
 #能量反射率计算
