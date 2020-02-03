@@ -65,7 +65,7 @@ def Syk(n,cos_ar_k,k):     # s分量的光学导纳
         hdsj1=hdsj1+1
     return syk
 # 矩阵[BC]计算
-def CharacteristicMatrix(cos_ar_k,YK,xwhd,k):    #矩阵[BC]
+def CharacteristicMatrix(YK,xwhd,k):    #矩阵[BC]
     bc_2=[1,YK[-1]]
     gdsh=0;bc_1=[]
     while gdsh<=k:                       #各层特征矩阵连乘
@@ -112,8 +112,8 @@ for wavelength in Wavelength:
     #print('p分量的光学导纳',PYK)
     SYK=Syk(n,cos_ar_k,k)                    # s分量的光学导纳
     #print('s分量的光学导纳',SYK)
-    BCp=CharacteristicMatrix(cos_ar_k,PYK,xwhd,k)     # p分量矩阵[BC]计算
-    BCs=CharacteristicMatrix(cos_ar_k,SYK,xwhd,k)     # s分量矩阵[BC]计算
+    BCp=CharacteristicMatrix(PYK,xwhd,k)     # p分量矩阵[BC]计算
+    BCs=CharacteristicMatrix(SYK,xwhd,k)     # s分量矩阵[BC]计算
     #print('p的BC',BCp)
     #print('s的BC',BCs)
     R=reflex(BCp,BCs,PYK[0],SYK[0])              #衬底和膜系组合的能量反射率
