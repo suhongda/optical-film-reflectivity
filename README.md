@@ -1,2 +1,2 @@
 # optical-film-reflectivity
-![](https://github.com/suhongda/optical-film-reflectivity/raw/介绍.png) 
+![](https://raw.githubusercontent.com/suhongda/optical-film-reflectivity/master/%E4%BB%8B%E7%BB%8D.png) 
