@@ -25,9 +25,9 @@ def inputParameter():            # 输入层数、折射率、厚度、入射角
     return n,d,o,k
 # 要计算波长范围输入
 def wavelengthInput():            # 要计算波长范围输入
-    wavelengthMin=380#int(input('计算波长的最少值'))
-    spacing=1#float(input('计算波长的间隔'))
-    wavelengthMax=780#int(input('计算波长的最大值'))
+    wavelengthMin=int(input('计算波长的最少值'))
+    spacing=float(input('计算波长的间隔'))
+    wavelengthMax=int(input('计算波长的最大值'))
     Wavelength=np.arange(wavelengthMin,wavelengthMax,spacing)     #产生波长序列
     return Wavelength
 # cosφk的计算
@@ -94,10 +94,9 @@ def reflex(BCp,BCs,PYK_0,SYK_0):                     # 衬底和膜系组合的�
     R=(pRj+sRj)/2
     return R.real
 
-# n=[1,1.38,2.55,1.52]
-# d=[0,135,130,0]
-# o=0
-# k=2
+
+
+
 
 n,d,o,k=inputParameter()            # 输入层数k、折射率n、厚度d、入射角度o
 Wavelength=wavelengthInput()     #要计算波长范围输入
@@ -126,4 +125,3 @@ plt.ylabel('Reflectivity (%)')               # 设置 y轴的名称
 plt.xlim(380,780)                # 设置x轴的坐标的范围
 #plt.ylim(1,5)                  # 设置y轴的坐标的范围
 plt.show()
-
