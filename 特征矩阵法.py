@@ -104,19 +104,12 @@ reflectivity=[]           #能量反射率列表，空
 #能量反射率计算
 for wavelength in Wavelength:
     cos_ar_k=cos_RefractionAngle_k(o,n)      # cosφk的计算
-    #print('cosφk', cos_ar_k)
     xwhd=PhaseThickness_k(d,cos_ar_k,wavelength,k,n)   #相位厚度
-    #print('相位厚度',xwhd)
     PYK=Pyk(n,cos_ar_k,k)                     # p分量的光学导纳
-    #print('p分量的光学导纳',PYK)
     SYK=Syk(n,cos_ar_k,k)                    # s分量的光学导纳
-    #print('s分量的光学导纳',SYK)
     BCp=CharacteristicMatrix(PYK,xwhd,k)     # p分量矩阵[BC]计算
     BCs=CharacteristicMatrix(SYK,xwhd,k)     # s分量矩阵[BC]计算
-    #print('p的BC',BCp)
-    #print('s的BC',BCs)
     R=reflex(BCp,BCs,PYK[0],SYK[0])              #衬底和膜系组合的能量反射率
-    #print(R)
     reflectivity.append(R*100)
 print(reflectivity)
 plt.plot(Wavelength,reflectivity,'r')
