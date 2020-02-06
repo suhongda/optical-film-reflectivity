@@ -25,9 +25,9 @@ def inputParameter():            # 输入层数、折射率、厚度、入射角
     return n,d,o,k
 # 要计算波长范围输入
 def wavelengthInput():            # 要计算波长范围输入
-    wavelengthMin=380#int(input('计算波长的最少值'))
-    spacing=1#float(input('计算波长的间隔'))
-    wavelengthMax=780#int(input('计算波长的最大值'))
+    wavelengthMin=int(input('计算波长的最少值'))
+    spacing=float(input('计算波长的间隔'))
+    wavelengthMax=int(input('计算波长的最大值'))
     Wavelength=np.arange(wavelengthMin,wavelengthMax,spacing)     #产生波长序列
     return Wavelength
 # cosφk的计算
@@ -64,49 +64,61 @@ def Syk(n,cos_ar_k,k):     # s分量的光学导纳
         syk.append(n[hdsj1] * cos_ar_k[hdsj1])              #  ηk=nk*cosφk
         hdsj1=hdsj1+1
     return syk
-
-#  反射率
-def InterfaceReflectionCoefficient(YK,xwhd,k):
-    r_xishu=[]
-    for i in range(k+1):
-        xishu_1=(YK[i]-YK[i+1])/(YK[i]+YK[i+1])
-        r_xishu.append(xishu_1)
-    r_xishu=r_xishu[::-1]                              #  反转列表
-    xwhd=xwhd[::-1]
-    hjsahj=[]
-    hjsahj_4=0
-    for i in range(k+1):
-        if i==1:
-            hjsahj_1=r_xishu[i]+r_xishu[i-1]*np.exp(-1j*2*xwhd[i])
-            hjsahj_2=1+r_xishu[i]*r_xishu[i-1]*np.exp(-1j*2*xwhd[i])
-            hjsahj_3=hjsahj_1/hjsahj_2
-            hjsahj_4=hjsahj_3
-            hjsahj.append(hjsahj_3)
-        elif i>1:
-            hjsahj_1=r_xishu[i]+hjsahj_4*np.exp(-1j*2*xwhd[i])
-            hjsahj_2=1+r_xishu[i]*hjsahj_4*np.exp(-1j*2*xwhd[i])
+#菲涅尔系数r_s
+def FresnelCoefficient_r_s(cos_ar_k,n,k):
+    r_s = []
+    for i in range(k + 1):
+        r_s1=(n[i]*cos_ar_k[i])-(n[i+1]*cos_ar_k[i+1])
+        r_s2=(n[i]*cos_ar_k[i])+(n[i+1]*cos_ar_k[i+1])
+        r_s3=r_s1/r_s2
+        r_s.append(r_s3)
+    return r_s
+#菲涅尔系数r_p
+def FresnelCoefficient_r_p(cos_ar_k,n,k):
+    r_p = []
+    for i in range(k + 1):
+        r_p1 = (n[i] * cos_ar_k[i+1]) - (n[i + 1] * cos_ar_k[i])
+        r_p2 = (n[i] * cos_ar_k[i+ 1]) + (n[i + 1] * cos_ar_k[i])
+        r_p3 = r_p1 / r_p2
+        r_p.append(r_p3)
+    return r_p
+# 递推法
+def RecurrenceMethod(xwhd,r_ps,k):
+    r_ps = r_ps[::-1]  # 反转列表
+    xwhd = xwhd[::-1]
+    hjsahj = []
+    hjsahj_4 = 0
+    for i in range(k +1):
+        if i == 1:
+            hjsahj_1 = r_ps[i] + r_ps[i - 1] * np.exp(-1j * 2 * xwhd[i])
+            hjsahj_2 = 1 + r_ps[i] * r_ps[i - 1] * np.exp(-1j * 2 * xwhd[i])
             hjsahj_3 = hjsahj_1 / hjsahj_2
-            hjsahj_4=hjsahj_3
+            hjsahj_4 = hjsahj_3
             hjsahj.append(hjsahj_3)
-    jhgd=hjsahj[-1]*(hjsahj[-1].conjugate())
+        elif i > 1:
+            hjsahj_1 = r_ps[i] + hjsahj_4 * np.exp(-1j * 2 * xwhd[i])
+            hjsahj_2 = 1 + r_ps[i] * hjsahj_4 * np.exp(-1j * 2 * xwhd[i])
+            hjsahj_3 = hjsahj_1 / hjsahj_2
+            hjsahj_4 = hjsahj_3
+            hjsahj.append(hjsahj_3)
+    jhgd = hjsahj[-1] * (hjsahj[-1].conjugate())
     return jhgd.real
 
 
-n=[1,1.38,1.45,1.52]
-d=[0,72.46,58.82,0]
-o=0
-k=2
 
 
+n,d,o,k=inputParameter()            # 输入层数k、折射率n、厚度d、入射角度o
 Wavelength=wavelengthInput()     #要计算波长范围输入
 reflectivity=[]           #能量反射率列表，空
 for wavelength in Wavelength:
-    cos_ar_k=cos_RefractionAngle_k(o,n)      # cosφk的计算
+    cos_ar_k=cos_RefractionAngle_k(o,n)      #  cosφk的计算
     xwhd=PhaseThickness_k(d,cos_ar_k,wavelength,k,n)   #相位厚度
     PYK=Pyk(n,cos_ar_k,k)                     # p分量的光学导纳
     SYK=Syk(n,cos_ar_k,k)                    # s分量的光学导纳
-    ppp=InterfaceReflectionCoefficient(PYK,xwhd,k)
-    sss=InterfaceReflectionCoefficient(SYK,xwhd,k)
+    r_p=FresnelCoefficient_r_p(cos_ar_k,n,k)
+    r_s=FresnelCoefficient_r_s(cos_ar_k,n,k)
+    ppp=RecurrenceMethod(xwhd,r_p,k)
+    sss=RecurrenceMethod(xwhd,r_s,k)
     rrrr=(ppp+sss)/2
     reflectivity.append(rrrr * 100)
 print(reflectivity)
@@ -116,6 +128,3 @@ plt.ylabel('Reflectivity (%)')               # 设置 y轴的名称
 plt.xlim(380,780)                # 设置x轴的坐标的范围
 #plt.ylim(0,5)                  # 设置y轴的坐标的范围
 plt.show()
-
-
-
